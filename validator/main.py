@@ -5,11 +5,11 @@ from guardrails.validator_base import (
     register_validator,
 )
 
-from .generic_prompt_validator import GenericPromptValidator
+from guardrails.hub.guardrails.response_evaluator.validator import ResponseEvaluator
 
 
 @register_validator(name="guardrails/responsiveness_check", data_type="string")
-class ResponsivenessCheck(GenericPromptValidator):
+class ResponsivenessCheck(ResponseEvaluator):  # type: ignore
     """Validates that a generated output responds to the prompt given.
 
     **Key Properties**
