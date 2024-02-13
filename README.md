@@ -9,69 +9,37 @@
 
 # Description
 
-This validator ensures that a generated output is the literal "pass".
+This validator ensures that a generated output responds to the prompt given.
 
 # Installation
 
 ```bash
-$ guardrails hub install hub://guardrails/validator_template
+$ guardrails hub install hub://guardrails/responsiveness_check
 ```
 
 # Usage Examples
 
 ## Validating string output via Python
 
-In this example, we’ll test that a generated word is `pass`.
+In this example, we’ll test that a generated output actually answers the question posed in the prompt.
 
 ```python
 # Import Guard and Validator
-from guardrails.hub import ValidatorTemplate
+from guardrails.hub import ResponsivenessCheck
 from guardrails import Guard
 
-# Initialize Validator
-val = ValidatorTemplate()
+prompt = "What is the capital of Missouri?"
 
 # Setup Guard
-guard = Guard.from_string(
-    validators=[val, ...],
-)
+guard = Guard.use(ResponsivenessCheck, prompt)
 
-guard.parse("pass")  # Validator passes
-guard.parse("fail")  # Validator fails
-```
-
-## Validating JSON output via Python
-
-In this example, we verify that a processes’s status is specified as `pass`.
-
-```python
-# Import Guard and Validator
-from pydantic import BaseModel
-from guardrails.hub import ValidatorTemplate
-from guardrails import Guard
-
-val = ValidatorTemplate()
-
-# Create Pydantic BaseModel
-class Process(BaseModel):
-		process_name: str
-		status: str = Field(validators=[val])
-
-# Create a Guard to check for valid Pydantic output
-guard = Guard.from_pydantic(output_class=Process)
-
-# Run LLM output generating JSON through guard
-guard.parse("""
-{
-		"process_name": "templating",
-		"status": "pass"
-}
-""")
+guard.validate("Jefferson City is the capital of Missouri.")  # Validation passes
+guard.validate("Paris is the capital of France.")  # Validation fails because this response isn't related to what we asked.
 ```
 
 # API Reference
 
 `__init__`
-- `arg_1`: A placeholder argument to demonstrate how to use init arguments.
-- `arg_2`: Another placeholder argument to demonstrate how to use init arguments.
-- `on_fail`: The policy to enact when a validator fails.
+- `prompt`: The original prompt to the LLM.
+- `llm_callable`: Model name to make the litellm call.  Defaults to `gpt-3.5-turbo`.
+- `on_fail`: The policy to enact when a validator fails.  Defaults to `noop`

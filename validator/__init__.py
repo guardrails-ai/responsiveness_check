@@ -1,3 +1,3 @@
-from .main import ValidatorTemplate
+from .main import ResponsivenessCheck
 
-__all__ = ["ValidatorTemplate"]
+__all__ = ["ResponsivenessCheck"]

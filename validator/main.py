@@ -1,48 +1,46 @@
 from typing import Any, Callable, Dict, Optional
 
 from guardrails.validator_base import (
-    FailResult,
-    PassResult,
     ValidationResult,
-    Validator,
     register_validator,
 )
 
+from .generic_prompt_validator import GenericPromptValidator
 
-@register_validator(name="guardrails/validator_template", data_type="string")
-class ValidatorTemplate(Validator):
-    """Validates that {fill in how you validator interacts with the passed value}.
+
+@register_validator(name="guardrails/responsiveness_check", data_type="string")
+class ResponsivenessCheck(GenericPromptValidator):
+    """Validates that a generated output responds to the prompt given.
 
     **Key Properties**
 
     | Property                      | Description                       |
     | ----------------------------- | --------------------------------- |
-    | Name for `format` attribute   | `guardrails/validator_template`   |
+    | Name for `format` attribute   | `guardrails/responsiveness_check` |
     | Supported data types          | `string`                          |
-    | Programmatic fix              | {If you support programmatic fixes, explain it here. Otherwise `None`} |
+    | Programmatic fix              | None                              |
 
     Args:
-        arg_1 (string): {Description of the argument here}
-        arg_2 (string): {Description of the argument here}
+        prompt (string): The original prompt to the LLM.
+        llm_callable (str, optional): Model name to make the litellm call.
+            Defaults to `gpt-3.5-turbo`
+        on_fail (Callable, optional): A function to call when validation fails.
+            Defaults to None.
     """  # noqa
 
-    # If you don't have any init args, you can omit the __init__ method.
     def __init__(
         self,
-        arg_1: str,
-        arg_2: str,
+        prompt: str,
+        llm_callable: Optional[str] = "gpt-3.5-turbo",
         on_fail: Optional[Callable] = None,
     ):
-        super().__init__(on_fail=on_fail, arg_1=arg_1, arg_2=arg_2)
-        self._arg_1 = arg_1
-        self._arg_2 = arg_2
+        super().__init__(on_fail=on_fail, prompt=prompt, llm_callable=llm_callable)
+        self._prompt = prompt
 
     def validate(self, value: Any, metadata: Dict) -> ValidationResult:
-        """Validates that {fill in how you validator interacts with the passed value}."""
-        # Add your custom validator logic here and return a PassResult or FailResult accordingly.
-        if value != "pass": # FIXME
-            return FailResult(
-                error_message="{A descriptive but concise error message about why validation failed}",
-                fix_value="{The programmtic fix if applicable, otherwise remove this kwarg.}",
-            )
-        return PassResult()
+        metadata["validation_question"] = f"""Does this LLM Response respond to the following prompt?
+        Prompt:
+        {self._prompt}
+        """
+
+        return super().validate(value, metadata)

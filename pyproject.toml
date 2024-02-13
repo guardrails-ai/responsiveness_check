@@ -1,7 +1,7 @@
 [project]
-name = "regexmatch"
+name = "responsiveness_check"
 version = "0.0.0"
-description = "Template repo for Guardrails Hub validators."
+description = "This validator ensures that a generated output responds to the prompt given."
 authors = [
     {name = "Guardrails AI", email = "contact@guardrailsai.com"}
 ]
@@ -9,7 +9,8 @@ license = {file = "LICENSE"}
 readme = "README.md"
 requires-python = ">= 3.8"
 dependencies = [
-    "guardrails-ai>=0.3.2"
+    "guardrails-ai>=0.3.2",
+    "litellm"
 ]
 
 [project.optional-dependencies]

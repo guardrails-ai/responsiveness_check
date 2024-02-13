@@ -1,27 +1,44 @@
-# to run these, run 
-# make tests
-
-from guardrails import Guard
+import os
 import pytest
-from validator import ValidatorTemplate
+from guardrails import Guard
+from validator import ResponsivenessCheck
 
-# We use 'exception' as the validator's fail action,
-#  so we expect failures to always raise an Exception
-# Learn more about corrective actions here:
-#  https://www.guardrailsai.com/docs/concepts/output/#%EF%B8%8F-specifying-corrective-actions
-guard = Guard.from_string(validators=[ValidatorTemplate(arg_1="arg_1", arg_2="arg_2", on_fail="exception")])
+prompt = "What is the capital of Missouri?"
+guard = Guard.from_string(validators=[ResponsivenessCheck(prompt=prompt, on_fail="exception")])
 
+@pytest.mark.skipif(
+    os.environ.get("OPENAI_API_KEY") in [None, "mocked"],
+    reason="openai api key not set",
+)
 def test_pass():
-  test_output = "pass"
+  test_output = "Jefferson City is the capital of Missouri."
   result = guard.parse(test_output)
   
   assert result.validation_passed is True
   assert result.validated_output == test_output
 
-def test_fail():
-  with pytest.raises(Exception) as exc_info:
-    test_output = "fail"
+
+@pytest.mark.skipif(
+    os.environ.get("OPENAI_API_KEY") in [None, "mocked"],
+    reason="openai api key not set",
+)
+def test_fail_non_responsive():
+  with pytest.raises(Exception) as excinfo:
+    test_output = "Paris is the capital of France."
     guard.parse(test_output)
   
-  # Assert the exception has your error_message
-  assert str(exc_info.value) == "Validation failed for field with errors: {A descriptive but concise error message about why validation failed}"
+  # Sometimes this test will fail bc the llm is unsure.
+  assert str(excinfo.value) == "Validation failed for field with errors: The LLM says 'No'. The validation failed."
+
+
+# TODO: Is this behaviour expected?
+@pytest.mark.skipif(
+    os.environ.get("OPENAI_API_KEY") in [None, "mocked"],
+    reason="openai api key not set",
+)
+def test_fail_responsive_but_incorrect():
+  with pytest.raises(Exception) as excinfo:
+    test_output = "Kansas City is the capital of Missouri."
+    guard.parse(test_output)
+  
+  assert str(excinfo.value) == "Validation failed for field with errors: The LLM says 'No'. The validation failed."
