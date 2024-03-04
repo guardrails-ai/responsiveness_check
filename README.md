@@ -30,19 +30,32 @@ In this example, we’ll test that a generated output actually answers the quest
 
 ```python
 # Import Guard and Validator
-from guardrails.hub import ResponsivenessCheck
 from guardrails import Guard
+from guardrails.hub import ResponsivenessCheck
 
 prompt = "What is the capital of Missouri?"
 
 # Setup Guard
-guard = Guard().use(ResponsivenessCheck, prompt=prompt, llm_callable="gpt-3.5-turbo")
+guard = Guard().use(
+    ResponsivenessCheck,
+    prompt=prompt,
+    llm_callable="gpt-3.5-turbo",
+    on_fail="exception",
+)
 
-guard.validate("Jefferson City is the capital of Missouri.", metadata={"pass_on_invalid": True})  # Validation passes
+res = guard.validate(
+    "Jefferson City is the capital of Missouri.", metadata={"pass_on_invalid": True}
+)  # Validation passes
 try:
-    guard.validate("Paris is the capital of France.")  # Validation fails because this response isn't related to what we asked.
+    res = guard.validate(
+        "Berlin is the capital of Germany."
+    )  # Validation fails because this response isn't related to what we asked.
 except Exception as e:
     print(e)
+```
+Output:
+```console
+Validation failed for field with errors: The LLM says 'No'. The validation failed.
 ```
 
 ## API Reference
