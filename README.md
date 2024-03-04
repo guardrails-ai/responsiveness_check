@@ -12,6 +12,10 @@
 
 This validator ensures that a generated output responds to the given prompt.
 
+## Requirements
+* Dependencies: `litellm`
+* API keys: Set your LLM provider API key as an environment variable which will be used by `litellm` to authenticate with the LLM provider. For more information on supported LLM providers and how to set up the API key, refer to the LiteLLM documentation.
+
 ## Installation
 
 ```bash
