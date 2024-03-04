@@ -4,7 +4,7 @@
 | --- | --- |
 | Date of development | Feb 15, 2024 |
 | Validator type | Format |
-| Blog |  |
+| Blog | - |
 | License | Apache 2 |
 | Input/Output | Output |
 
@@ -15,7 +15,7 @@ This validator ensures that a generated output responds to the given prompt.
 ## Installation
 
 ```bash
-$ guardrails hub install hub://guardrails/responsiveness_check
+guardrails hub install hub://guardrails/responsiveness_check
 ```
 
 ## Usage Examples
@@ -32,10 +32,13 @@ from guardrails import Guard
 prompt = "What is the capital of Missouri?"
 
 # Setup Guard
-guard = Guard.use(ResponsivenessCheck, prompt)
+guard = Guard().use(ResponsivenessCheck, prompt=prompt, llm_callable="gpt-3.5-turbo")
 
-guard.validate("Jefferson City is the capital of Missouri.")  # Validation passes
-guard.validate("Paris is the capital of France.")  # Validation fails because this response isn't related to what we asked.
+guard.validate("Jefferson City is the capital of Missouri.", metadata={"pass_on_invalid": True})  # Validation passes
+try:
+    guard.validate("Paris is the capital of France.")  # Validation fails because this response isn't related to what we asked.
+except Exception as e:
+    print(e)
 ```
 
 ## API Reference
@@ -55,7 +58,7 @@ Initializes a new instance of the Validator class.
 
 <br>
 
-**`__call__(self, value, metadata={}) → ValidationOutcome`**
+**`__call__(self, value, metadata={}) → ValidationResult`**
 
 <ul>
 
@@ -69,6 +72,11 @@ Note:
 **Parameters:**
 
 - **`value`** *(Any):* The input value to validate.
-- **`metadata`** *(dict):* A dictionary containing metadata required for validation. No additional metadata keys are needed for this validator.
+- **`metadata`** *(dict):* A dictionary containing metadata required for validation. Keys and values must match the expectations of this validator.
+    
+    
+    | Key | Type | Description | Default | Required |
+    | --- | --- | --- | --- | --- |
+    | `pass_on_invalid` | Boolean | Whether to pass the validation if the LLM returns an invalid response | False | No |
 
 </ul>
