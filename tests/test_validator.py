@@ -21,8 +21,8 @@ guard = Guard.from_string(
         ("Kansas City is the capital of Missouri.", {"pass_on_invalid": True}),
     ],
 )
-def test_pass(test_output):
-    result = guard.parse(test_output)
+def test_pass(test_output, metadata):
+    result = guard.parse(test_output, metadata=metadata)
 
     assert result.validation_passed is True
     assert result.validated_output == test_output
@@ -38,7 +38,7 @@ def test_fail_non_responsive():
         guard.parse(test_output)
 
     # Sometimes this test will fail bc the llm is unsure.
-    assert (
-        str(excinfo.value)
-        == "Validation failed for field with errors: The LLM says 'No'. The validation failed."
+    assert str(excinfo.value) in (
+        "Validation failed for field with errors: The LLM says 'No'. The validation failed.",
+        "The LLM returned an invalid answer. Failing the validation...",
     )
