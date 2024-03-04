@@ -1,11 +1,10 @@
 from typing import Any, Callable, Dict, Optional
 
+from guardrails.hub.guardrails.response_evaluator.validator import ResponseEvaluator
 from guardrails.validator_base import (
     ValidationResult,
     register_validator,
 )
-
-from guardrails.hub.guardrails.response_evaluator.validator import ResponseEvaluator
 
 
 @register_validator(name="guardrails/responsiveness_check", data_type="string")
@@ -38,7 +37,10 @@ class ResponsivenessCheck(ResponseEvaluator):  # type: ignore
         self._prompt = prompt
 
     def validate(self, value: Any, metadata: Dict) -> ValidationResult:
-        metadata["validation_question"] = f"""Does this LLM Response respond to the following prompt?
+        """Validates that the LLM response responds to the given prompt."""
+        metadata[
+            "validation_question"
+        ] = f"""Does the above 'Response' answer the following prompt?
         Prompt:
         {self._prompt}
         """
