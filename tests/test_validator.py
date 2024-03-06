@@ -4,10 +4,7 @@ import pytest
 from guardrails import Guard
 from validator import ResponsivenessCheck
 
-prompt = "What is the capital of Missouri?"
-guard = Guard.from_string(
-    validators=[ResponsivenessCheck(prompt=prompt, on_fail="exception")]
-)
+guard = Guard.from_string(validators=[ResponsivenessCheck(on_fail="exception")])
 
 
 @pytest.mark.skipif(
@@ -17,8 +14,20 @@ guard = Guard.from_string(
 @pytest.mark.parametrize(
     "test_output, metadata",
     [
-        ("Jefferson City is the capital of Missouri.", {"pass_on_invalid": True}),
-        ("Kansas City is the capital of Missouri.", {"pass_on_invalid": True}),
+        (
+            "Jefferson City is the capital of Missouri.",
+            {
+                "original_prompt": "What is the capital of Missouri?",
+                "pass_on_invalid": True,
+            },
+        ),
+        (
+            "Kansas City is the capital of Missouri.",
+            {
+                "original_prompt": "What is the capital of Missouri?",
+                "pass_on_invalid": True,
+            },
+        ),
     ],
 )
 def test_pass(test_output, metadata):
@@ -34,8 +43,12 @@ def test_pass(test_output, metadata):
 )
 def test_fail_non_responsive():
     with pytest.raises(Exception) as excinfo:
-        test_output = "Paris is the capital of France."
-        guard.parse(test_output)
+        guard.parse(
+            "Paris is the capital of France.",
+            metadata={
+                "original_prompt": "What is the capital of Missouri?",
+            },
+        )
 
     # Sometimes this test will fail bc the llm is unsure.
     assert str(excinfo.value) in (

@@ -29,20 +29,26 @@ class ResponsivenessCheck(ResponseEvaluator):  # type: ignore
 
     def __init__(
         self,
-        prompt: str,
         llm_callable: Optional[str] = "gpt-3.5-turbo",
         on_fail: Optional[Callable] = None,
     ):
-        super().__init__(on_fail=on_fail, prompt=prompt, llm_callable=llm_callable)
-        self._prompt = prompt
+        super().__init__(on_fail=on_fail, llm_callable=llm_callable)
 
     def validate(self, value: Any, metadata: Dict) -> ValidationResult:
         """Validates that the LLM response responds to the given prompt."""
+
+        original_prompt = metadata.get("original_prompt", None)
+        if original_prompt is None:
+            raise RuntimeError(
+                """Missing 'original_prompt' in metadata.
+                Please provide the prompt, and try again.
+                """
+            )
         metadata[
             "validation_question"
-        ] = f"""Does the above 'Response' answer the following prompt?
+        ] = f"""Does the above 'Response' answer the following 'Prompt'?
         Prompt:
-        {self._prompt}
+        {original_prompt}
         """
 
         return super().validate(value, metadata)

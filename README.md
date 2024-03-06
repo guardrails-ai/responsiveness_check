@@ -33,22 +33,26 @@ In this example, we’ll test that a generated output actually answers the quest
 from guardrails import Guard
 from guardrails.hub import ResponsivenessCheck
 
-prompt = "What is the capital of Missouri?"
-
 # Setup Guard
 guard = Guard().use(
     ResponsivenessCheck,
-    prompt=prompt,
     llm_callable="gpt-3.5-turbo",
     on_fail="exception",
 )
 
 res = guard.validate(
-    "Jefferson City is the capital of Missouri.", metadata={"pass_on_invalid": True}
+    "Jefferson City is the capital of Missouri.", 
+    metadata={
+        "original_prompt": "What is the capital of Missouri?",
+        "pass_on_invalid": True
+    }
 )  # Validation passes
 try:
     res = guard.validate(
-        "Berlin is the capital of Germany."
+        "Berlin is the capital of Germany.",
+        metadata={
+            "original_prompt": "What is the capital of Missouri?",
+        }
     )  # Validation fails because this response isn't related to what we asked.
 except Exception as e:
     print(e)
@@ -94,6 +98,7 @@ Note:
     
     | Key | Type | Description | Default | Required |
     | --- | --- | --- | --- | --- |
+    | `original_prompt` | String | The original prompt to the LLM | - | Yes |
     | `pass_on_invalid` | Boolean | Whether to pass the validation if the LLM returns an invalid response | False | No |
 
 </ul>
