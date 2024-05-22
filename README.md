@@ -15,15 +15,15 @@ This validator ensures that a generated output responds to the given prompt.
 ### Requirements
 
 * Dependencies:
-    - `litellm` 
-    - guardrails-ai>=0.4.0 
+    - `litellm`
+    - guardrails-ai>=0.4.0
 
 * API keys: Set your LLM provider API key as an environment variable which will be used by `litellm` to authenticate with the LLM provider. For more information on supported LLM providers and how to set up the API key, refer to the LiteLLM documentation.
 
 ## Installation
 
 ```bash
-guardrails hub install hub://guardrails/responsiveness_check
+$ guardrails hub install hub://guardrails/responsiveness_check
 ```
 
 ## Usage Examples
@@ -83,7 +83,7 @@ Initializes a new instance of the Validator class.
 
 <br>
 
-**`__call__(self, value, metadata={}) → ValidationResult`**
+**`__call__(self, value, metadata={}) -> ValidationResult`**
 
 <ul>
 
