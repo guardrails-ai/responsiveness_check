@@ -1,19 +1,23 @@
 ## Overview
 
 | Developed by | Guardrails AI |
-| --- | --- |
 | Date of development | Feb 15, 2024 |
 | Validator type | Format |
-| Blog | - |
+| Blog |  |
 | License | Apache 2 |
 | Input/Output | Output |
 
 ## Description
 
+### Intended Use
 This validator ensures that a generated output responds to the given prompt.
 
-## Requirements
-* Dependencies: `litellm`
+### Requirements
+
+* Dependencies:
+    - `litellm` 
+    - guardrails-ai>=0.4.0 
+
 * API keys: Set your LLM provider API key as an environment variable which will be used by `litellm` to authenticate with the LLM provider. For more information on supported LLM providers and how to set up the API key, refer to the LiteLLM documentation.
 
 ## Installation
@@ -62,7 +66,7 @@ Output:
 Validation failed for field with errors: The LLM says 'No'. The validation failed.
 ```
 
-## API Reference
+# API Reference
 
 **`__init__(self, prompt, llm_callable='gpt-3.5-turbo', on_fail="noop")`**
 <ul>
