@@ -1,6 +1,6 @@
 [project]
 name = "responsiveness_check"
-version = "0.0.1"
+version = "0.0.2"
 description = "This validator ensures that a generated output responds to the prompt given."
 authors = [
     {name = "Guardrails AI", email = "contact@guardrailsai.com"}
@@ -11,7 +11,7 @@ requires-python = ">= 3.8.1"
 dependencies = [
     "guardrails-ai>=0.4.0",
     "litellm",
-    "guardrails-grhub-response_evaluator"
+    "guardrails-grhub-response_evaluator<1.0.0"
 ]
 
 [project.optional-dependencies]
